@@ -1,0 +1,50 @@
+# Euler Method
+for i in range(num_steps):
+    x_v = euler_x[-1], euler_v[-1]
+    x_new = x_v + v * dt
+    v_new = v + a * dt
+    euler_x.append(x_new)
+    euler_v.append(v_new)
+
+# Runge-Kutta 2nd Order Method (RK2)
+for i in range(num_steps):
+    x, v = rk2_x[-1], rk2_v[-1]
+    k1_x = v * dt
+    k1_v = a * dt
+    k2_x = (v + (k1_v / 2)) * dt
+    k2_v = a * dt
+    x_new = x + k2_x
+    v_new = v + k2_v
+    rk2_x.append(x_new)
+    rk2_v.append(v_new)
+
+# Runge-Kutta 4th Order Method (RK4)
+for i in range(num_steps):
+    x, v = rk4_x[-1], rk4_v[-1]
+    k1_x = v * dt
+    k1_v = a * dt
+    k2_x = (v + (k1_v / 2)) * dt
+    k2_v = a * dt
+    k3_x = (v + (k2_v / 2)) * dt
+    k3_v = a * dt
+    k4_x = (v + k3_v) * dt
+    k4_v = a * dt
+    x_new = x + (k1_x + 2 * k2_x + 2 * k3_x + k4_x) / 6
+    v_new = v + (k1_v + 2 * k2_v + 2 * k3_v + k4_v) / 6
+    rk4_x.append(x_new)
+    rk4_v.append(v_new)
+
+# Analytical solution for comparison
+analytical_x = x0 + v0 * time_points + 0.5 * a * time_points**2
+
+# Plotting the results
+plt.figure(figsize=(12, 6))
+plt.plot(time_points, analytical_x, label="Analytical Solution", color='black', linestyle='--')
+plt.plot(time_points, euler_x, label="Euler Method", marker='o', markersize=4, linestyle='-')
+plt.plot(time_points, rk2_x, label="Runge-Kutta 2nd Order (RK2)", marker='s', markersize=4, linestyle='-')
+plt.plot(time_points, rk4_x, label="Runge-Kutta 4th Order (RK4)", marker='^', markersize=4, linestyle='-')
+plt.xlabel("Time (t)")
+plt.ylabel("Position (x)")
+plt.title("Numerical Solution of Particle Motion Under Constant Acceleration")
+plt.legend()
+plt.show()
