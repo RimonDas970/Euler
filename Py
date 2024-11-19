@@ -1,50 +1,43 @@
-# Euler Method
-for i in range(num_steps):
-    x_v = euler_x[-1], euler_v[-1]
-    x_new = x_v + v * dt
-    v_new = v + a * dt
-    euler_x.append(x_new)
-    euler_v.append(v_new)
+# Problem: Capacitance of a System with a Varying Dielectric
+import numpy as np
 
-# Runge-Kutta 2nd Order Method (RK2)
-for i in range(num_steps):
-    x, v = rk2_x[-1], rk2_v[-1]
-    k1_x = v * dt
-    k1_v = a * dt
-    k2_x = (v + (k1_v / 2)) * dt
-    k2_v = a * dt
-    x_new = x + k2_x
-    v_new = v + k2_v
-    rk2_x.append(x_new)
-    rk2_v.append(v_new)
+# Constants
+epsilon_0 = 8.854e-12  # Permittivity of free space (C^2/(N*m^2))
+A = 0.5  # Area of plates in Problem 4 (m^2)
 
-# Runge-Kutta 4th Order Method (RK4)
-for i in range(num_steps):
-    x, v = rk4_x[-1], rk4_v[-1]
-    k1_x = v * dt
-    k1_v = a * dt
-    k2_x = (v + (k1_v / 2)) * dt
-    k2_v = a * dt
-    k3_x = (v + (k2_v / 2)) * dt
-    k3_v = a * dt
-    k4_x = (v + k3_v) * dt
-    k4_v = a * dt
-    x_new = x + (k1_x + 2 * k2_x + 2 * k3_x + k4_x) / 6
-    v_new = v + (k1_v + 2 * k2_v + 2 * k3_v + k4_v) / 6
-    rk4_x.append(x_new)
-    rk4_v.append(v_new)
+# Define integrand
+def integrand_problem(x):
+    return epsilon_0 * A * (1 + x**2)
 
-# Analytical solution for comparison
-analytical_x = x0 + v0 * time_points + 0.5 * a * time_points**2
+# Numerical integration using the trapezoidal rule for Problem 4
+def trapezoidal_rule(func, a, b, n):
+    x_values = np.linspace(a, b, n + 1)
+    integral = 0.5 * (func(x_values[0]) + func(x_values[-1]))  # First and last terms
+    integral += np.sum(func(x_values[1:-1]))  # Middle terms
+    return integral * (b - a) / n
 
-# Plotting the results
-plt.figure(figsize=(12, 6))
-plt.plot(time_points, analytical_x, label="Analytical Solution", color='black', linestyle='--')
-plt.plot(time_points, euler_x, label="Euler Method", marker='o', markersize=4, linestyle='-')
-plt.plot(time_points, rk2_x, label="Runge-Kutta 2nd Order (RK2)", marker='s', markersize=4, linestyle='-')
-plt.plot(time_points, rk4_x, label="Runge-Kutta 4th Order (RK4)", marker='^', markersize=4, linestyle='-')
-plt.xlabel("Time (t)")
-plt.ylabel("Position (x)")
-plt.title("Numerical Solution of Particle Motion Under Constant Acceleration")
-plt.legend()
-plt.show()
+# Numerical integration using Simpson's 1/3 rule for Problem 4
+def simpsons_rule(func, a, b, n):
+    if n % 2 != 0:
+        raise ValueError("n must be even")
+    x_values = np.linspace(a, b, n + 1)
+    integral = func(x_values[0]) + func(x_values[-1])  # First and last terms
+    integral += 4 * np.sum(func(x_values[1:-1:2]))  # Odd indexed terms
+    integral += 2 * np.sum(func(x_values[2:-2:2]))  # Even indexed terms
+    return integral * (b - a) / (3 * n)
+
+# Set the interval and number of intervals for Problem 4
+a_capacitance, b_capacitance = 0, 0.1
+n_capacitance = 6  # for both trapezoidal and Simpson's rule
+
+# Calculate capacitance C using both methods for Problem 4
+C_inv_trapz = trapezoidal_rule(integrand_problem, a_capacitance, b_capacitance, n_capacitance)
+C_trapz = 1 / C_inv_trapz
+
+C_inv_simps = simpsons_rule(integrand_problem, a_capacitance, b_capacitance, n_capacitance)
+C_simps = 1 / C_inv_simps
+
+# Print capacitance C
+print("Problem - Capacitance C:")
+print(f"Using Trapezoidal Rule: C = {C_trapz:.2e} F")
+print(f"Using Simpson's 1/3 Rule: C = {C_simps:.2e} F")
