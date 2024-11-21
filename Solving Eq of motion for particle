@@ -1,0 +1,37 @@
+
+# Solve the equation of motion for a particle using Newton's Law
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the time parameters and constants
+t_start = 0       # Initial time
+t_end = 10        # Final time
+dt = 0.1          # Time step
+num_steps = int((t_end - t_start) / dt)
+
+# Define the initial conditions and constant acceleration
+x0 = 0            # Initial position
+v0 = 0            # Initial velocity
+a = 1             # Constant acceleration
+
+# Define lists to store results
+time_points = np.linspace(t_start, t_end, num_steps + 1)
+euler_x = [x0]    # List to store position values
+euler_v = [v0]    # List to store velocity values
+
+# Euler Method
+for i in range(num_steps):
+    x_new = euler_x[-1] + euler_v[-1] * dt
+    v_new = euler_v[-1] + a * dt
+    euler_x.append(x_new)
+    euler_v.append(v_new)
+
+# Plot the results
+plt.figure(figsize=(10, 6))
+plt.plot(time_points, euler_x, label="Euler Method (Position)", color="blue", marker="o", linestyle="--")
+plt.title("Particle Motion Under Constant Acceleration (Euler Method)")
+plt.xlabel("Time (s)")
+plt.ylabel("Position (m)")
+plt.grid()
+plt.legend()
+plt.show()
